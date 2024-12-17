@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Fotos 5x5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: 700;
+            font-size: 2rem;
+        }
+
+        #canvas {
+            background-color: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 8px;
+            max-width: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin: 20px 0;
+        }
+
+        #inputImage {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 2px dashed #4CAF50;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+        }
+
+        #inputImage:hover {
+            border-color: #2196F3;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #saveBtn {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        #saveBtn:hover {
+            background-color: #1976D2;
+            transform: translateY(-2px);
+        }
+
+        #resetBtn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #resetBtn:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de Fotos 5x5</h1>
+        <input type="file" id="inputImage" accept="image/*">
+        <canvas id="canvas" width="2480" height="3508"></canvas>
+        <div class="button-container">
+            <button id="saveBtn">Salvar Imagem</button>
+            <button id="resetBtn">Limpar</button>
+        </div>
+
+    </div>
+
+    <script>
+        const inputImage = document.getElementById("inputImage");
+        const canvas = document.getElementById("canvas");
+        const saveBtn = document.getElementById("saveBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const ctx = canvas.getContext("2d");
+
+        let image = new Image();
+
+        inputImage.addEventListener("change", handleImageUpload);
+        saveBtn.addEventListener("click", saveImage);
+        resetBtn.addEventListener("click", resetCanvas);
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        image.onload = function () {
+            drawImageInBlocks(image);
+        };
+
+        function drawImageInBlocks(img) {
+            const blockWidth = 590; // Tamanho do bloco ajustado para 590 pixels
+            const blockHeight = 590; // Tamanho do bloco ajustado para 590 pixels
+            const padding = 100; // Espaçamento aumentado entre os blocos
+
+            // Fundo branco
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Calcular o espaço total ocupado pelos blocos e o espaçamento total
+            const blocksPerRow = 3;
+            const blocksPerColumn = 5;
+            const totalWidth = (blockWidth + padding) * blocksPerRow - padding;
+            const totalHeight = (blockHeight + padding) * blocksPerColumn - padding;
+
+            // Calcular o ponto de início para centralizar os blocos
+            const startX = (canvas.width - totalWidth) / 2;
+            const startY = (canvas.height - totalHeight) / 2;
+
+            // Matriz de transformações para criar as cópias da imagem
+            const transformations = [];
+            for (let sy = 0; sy < blocksPerColumn; sy++) {
+                for (let sx = 0; sx < blocksPerRow; sx++) {
+                    transformations.push({ sx, sy });
+                }
+            }
+
+            // Função para calcular o recorte mantendo a proporção
+            function calculateCrop(img, targetWidth, targetHeight) {
+                const imgRatio = img.width / img.height;
+                const targetRatio = targetWidth / targetHeight;
+
+                let sourceWidth, sourceHeight, sourceX, sourceY;
+
+                if (imgRatio > targetRatio) {
+                    sourceHeight = img.height;
+                    sourceWidth = sourceHeight * targetRatio;
+                    sourceX = (img.width - sourceWidth) / 2;
+                    sourceY = 0;
+                } else {
+                    sourceWidth = img.width;
+                    sourceHeight = sourceWidth / targetRatio;
+                    sourceX = 0;
+                    sourceY = (img.height - sourceHeight) / 2;
+                }
+
+                return { sourceX, sourceY, sourceWidth, sourceHeight };
+            }
+
+            // Calcular o recorte correto
+            const crop = calculateCrop(img, blockWidth, blockHeight);
+
+            // Desenhar a imagem nos blocos
+            transformations.forEach(transform => {
+                const x = startX + transform.sx * (blockWidth + padding);
+                const y = startY + transform.sy * (blockHeight + padding);
+
+                // Desenhar a imagem
+                ctx.drawImage(
+                    img, 
+                    crop.sourceX, crop.sourceY, crop.sourceWidth, crop.sourceHeight,
+                    x, y, 
+                    blockWidth, 
+                    blockHeight
+                );
+
+                // Desenhar borda
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, blockWidth, blockHeight);
+            });
+        }
+
+        function saveImage() {
+            const imgURL = canvas.toDataURL("image/jpeg");
+            const a = document.createElement("a");
+            a.href = imgURL;
+            a.download = "fotos_5x5.jpg";
+            a.click();
+        }
+
+        function resetCanvas() {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            inputImage.value = ''; // Limpar o input de arquivo
+        }
+    </script>
+</body>
+</html>
