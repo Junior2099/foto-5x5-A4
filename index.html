@@ -193,21 +193,39 @@
                 return { sourceX, sourceY, sourceWidth, sourceHeight };
             }
 
-            transformations.forEach((transform, index) => {
-                const img = images[index % images.length];
+            if (images.length === 1) {
+                const img = images[0];
                 const crop = calculateCrop(img, blockWidth, blockHeight);
 
-                const x = startX + transform.sx * (blockWidth + padding);
-                const y = startY + transform.sy * (blockHeight + padding);
+                transformations.forEach((transform) => {
+                    const x = startX + transform.sx * (blockWidth + padding);
+                    const y = startY + transform.sy * (blockHeight + padding);
 
-                ctx.drawImage(
-                    img, 
-                    crop.sourceX, crop.sourceY, crop.sourceWidth, crop.sourceHeight,
-                    x, y, 
-                    blockWidth, 
-                    blockHeight
-                );
-            });
+                    ctx.drawImage(
+                        img, 
+                        crop.sourceX, crop.sourceY, crop.sourceWidth, crop.sourceHeight,
+                        x, y, 
+                        blockWidth, 
+                        blockHeight
+                    );
+                });
+            } else if (images.length >= 2) {
+                transformations.forEach((transform, index) => {
+                    const img = images[index % images.length];
+                    const crop = calculateCrop(img, blockWidth, blockHeight);
+
+                    const x = startX + transform.sx * (blockWidth + padding);
+                    const y = startY + transform.sy * (blockHeight + padding);
+
+                    ctx.drawImage(
+                        img, 
+                        crop.sourceX, crop.sourceY, crop.sourceWidth, crop.sourceHeight,
+                        x, y, 
+                        blockWidth, 
+                        blockHeight
+                    );
+                });
+            }
         }
 
         function saveImage() {
