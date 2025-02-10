@@ -109,13 +109,12 @@
 <body>
     <div class="container">
         <h1>Gerador de Fotos 5x5</h1>
-        <input type="file" id="inputImage" accept="image/*">
+        <input type="file" id="inputImage" accept="image/*" multiple>
         <canvas id="canvas" width="2480" height="3508"></canvas>
         <div class="button-container">
             <button id="saveBtn">Salvar Imagem</button>
             <button id="resetBtn">Limpar</button>
         </div>
-
     </div>
 
     <script>
@@ -125,46 +124,47 @@
         const resetBtn = document.getElementById("resetBtn");
         const ctx = canvas.getContext("2d");
 
-        let image = new Image();
+        let images = [];
 
         inputImage.addEventListener("change", handleImageUpload);
         saveBtn.addEventListener("click", saveImage);
         resetBtn.addEventListener("click", resetCanvas);
 
         function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    image.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+            const files = event.target.files;
+            if (files) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const img = new Image();
+                        img.src = e.target.result;
+                        images.push(img);
+                        if (images.length === files.length) {
+                            drawImagesInBlocks();
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
             }
         }
 
-        image.onload = function () {
-            drawImageInBlocks(image);
-        };
-
-        function drawImageInBlocks(img) {
-            const blockWidth = 590;
+        function drawImagesInBlocks() {
+            const blockWidth = 590; 
             const blockHeight = 590; 
             const padding = 100; 
 
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      
             const blocksPerRow = 3;
             const blocksPerColumn = 5;
             const totalWidth = (blockWidth + padding) * blocksPerRow - padding;
             const totalHeight = (blockHeight + padding) * blocksPerColumn - padding;
 
-          
             const startX = (canvas.width - totalWidth) / 2;
             const startY = (canvas.height - totalHeight) / 2;
 
-          
             const transformations = [];
             for (let sy = 0; sy < blocksPerColumn; sy++) {
                 for (let sx = 0; sx < blocksPerRow; sx++) {
@@ -172,7 +172,6 @@
                 }
             }
 
-          
             function calculateCrop(img, targetWidth, targetHeight) {
                 const imgRatio = img.width / img.height;
                 const targetRatio = targetWidth / targetHeight;
@@ -194,14 +193,12 @@
                 return { sourceX, sourceY, sourceWidth, sourceHeight };
             }
 
-   
-            const crop = calculateCrop(img, blockWidth, blockHeight);
+            transformations.forEach((transform, index) => {
+                const img = images[index % images.length];
+                const crop = calculateCrop(img, blockWidth, blockHeight);
 
-
-            transformations.forEach(transform => {
                 const x = startX + transform.sx * (blockWidth + padding);
                 const y = startY + transform.sy * (blockHeight + padding);
-
 
                 ctx.drawImage(
                     img, 
@@ -210,9 +207,6 @@
                     blockWidth, 
                     blockHeight
                 );
-
-  
-         
             });
         }
 
@@ -228,6 +222,7 @@
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             inputImage.value = ''; 
+            images = [];
         }
     </script>
 </body>
