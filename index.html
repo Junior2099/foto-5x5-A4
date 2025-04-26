@@ -4,9 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Fotos 5x5</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fblock%2F32%2Ftag-512.png&f=1&nofb=1&ipt=30c126ad64601382b254790f0494df0c4288ecf99f71a1ae0e089bd1bf29d64b&ipo=images">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://cdn3.iconfinder.com/data/icons/block/32/tag-512.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #5e35b1;
+            --secondary-color: #4527a0;
+            --accent-color: #7c4dff;
+            --danger-color: #e53935;
+            --success-color: #43a047;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,25 +29,26 @@
         }
 
         body {
-            font-family: 'Roboto', Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e1e5ee 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
             line-height: 1.6;
+            color: var(--dark-color);
         }
 
         .container {
             background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
             padding: 30px;
             width: 100%;
             max-width: 1200px;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
 
         .container:hover {
@@ -40,37 +56,92 @@
         }
 
         h1 {
-            color: #333;
-            margin-bottom: 25px;
-            font-weight: 700;
-            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 2.2rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        .description {
+            color: var(--gray-color);
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            background-color: rgba(94, 53, 177, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            background-color: rgba(94, 53, 177, 0.1);
+            border-color: var(--secondary-color);
+        }
+
+        .upload-area i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .upload-area h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        #inputImage {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
         }
 
         #canvas {
             background-color: white;
             border: 3px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: var(--border-radius);
             max-width: 100%;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin: 20px 0;
-        }
-
-        #inputImage {
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 2px dashed #4CAF50;
-            border-radius: 8px;
-            transition: border-color 0.3s ease;
-        }
-
-        #inputImage:hover {
-            border-color: #2196F3;
+            display: none;
         }
 
         .button-container {
             display: flex;
             justify-content: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
         button {
@@ -78,42 +149,148 @@
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.3s ease;
+            border-radius: 50px;
+            transition: var(--transition);
             border: none;
             text-transform: uppercase;
             letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         #saveBtn {
-            background-color: #2196F3;
+            background-color: var(--primary-color);
             color: white;
         }
 
         #saveBtn:hover {
-            background-color: #1976D2;
-            transform: translateY(-2px);
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
 
         #resetBtn {
-            background-color: #f44336;
+            background-color: var(--danger-color);
             color: white;
         }
 
         #resetBtn:hover {
-            background-color: #d32f2f;
-            transform: translateY(-2px);
+            background-color: #c62828;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .image-counter {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            margin-top: 15px;
+            display: inline-block;
+        }
+
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .size-options {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .size-option {
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .size-option.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .size-option:hover:not(.active) {
+            background-color: rgba(94, 53, 177, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .button-container, .size-options {
+                flex-direction: column;
+            }
+            
+            button, .size-option {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Gerador de Fotos 5x5</h1>
-        <input type="file" id="inputImage" accept="image/*" multiple>
+        <p class="description">Carregue suas fotos e gere automaticamente uma folha com imagens no formato 5x5 (5cm x 5cm) pronta para impressão.</p>
+        
+        <div class="size-options">
+            <div class="size-option active" data-size="5x5">5x5 cm</div>
+            <div class="size-option" data-size="4x4">4x4 cm</div>
+            <div class="size-option" data-size="3x4">3x4 cm</div>
+        </div>
+        
+        <div class="upload-area">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <h3>Clique para carregar fotos</h3>
+            <p>Arraste e solte ou clique para selecionar as imagens</p>
+            <div id="imageCounter" class="image-counter" style="display: none;">0 imagens selecionadas</div>
+            <input type="file" id="inputImage" accept="image/*" multiple>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processando imagens...</p>
+        </div>
+        
         <canvas id="canvas" width="2480" height="3508"></canvas>
+        
         <div class="button-container">
-            <button id="saveBtn">Salvar Imagem</button>
-            <button id="resetBtn">Limpar</button>
+            <button id="saveBtn">
+                <i class="fas fa-download"></i>
+                Salvar Imagem
+            </button>
+            <button id="resetBtn">
+                <i class="fas fa-trash-alt"></i>
+                Limpar Tudo
+            </button>
         </div>
     </div>
 
@@ -123,100 +300,140 @@
         const saveBtn = document.getElementById("saveBtn");
         const resetBtn = document.getElementById("resetBtn");
         const ctx = canvas.getContext("2d");
+        const uploadArea = document.querySelector('.upload-area');
+        const imageCounter = document.getElementById('imageCounter');
+        const loading = document.getElementById('loading');
+        const sizeOptions = document.querySelectorAll('.size-option');
 
         let images = [];
+        let loadedImages = 0;
+        let currentSize = '5x5'; 
+
+        const sizeConfigs = {
+            '5x5': { 
+                blockWidth: 590, 
+                blockHeight: 590,
+                blocksPerRow: 3,
+                blocksPerColumn: 5
+            },
+            '4x4': {
+                blockWidth: 472,
+                blockHeight: 472,
+                blocksPerRow: 4,
+                blocksPerColumn: 6
+            },
+            '3x4': {
+                blockWidth: 354,
+                blockHeight: 472,
+                blocksPerRow: 5,
+                blocksPerColumn: 6
+            }
+        };
 
         inputImage.addEventListener("change", handleImageUpload);
         saveBtn.addEventListener("click", saveImage);
         resetBtn.addEventListener("click", resetCanvas);
+        
+        sizeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                sizeOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                currentSize = option.dataset.size;
+                if (images.length > 0) {
+                    drawImagesInBlocks();
+                }
+            });
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--secondary-color)';
+            uploadArea.style.backgroundColor = 'rgba(94, 53, 177, 0.2)';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = 'var(--primary-color)';
+            uploadArea.style.backgroundColor = 'rgba(94, 53, 177, 0.05)';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--primary-color)';
+            uploadArea.style.backgroundColor = 'rgba(94, 53, 177, 0.05)';
+            
+            if (e.dataTransfer.files.length) {
+                inputImage.files = e.dataTransfer.files;
+                handleImageUpload({ target: inputImage });
+            }
+        });
 
         function handleImageUpload(event) {
             const files = event.target.files;
-            if (files) {
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const img = new Image();
-                        img.src = e.target.result;
+            if (!files || files.length === 0) return;
+            
+            loading.style.display = 'block';
+            canvas.style.display = 'none';
+            images = [];
+            loadedImages = 0;
+            
+            imageCounter.textContent = `${files.length} imagem${files.length !== 1 ? 's' : ''} selecionada${files.length !== 1 ? 's' : ''}`;
+            imageCounter.style.display = 'inline-block';
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (!file.type.match('image.*')) continue;
+                
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = new Image();
+                    img.onload = function() {
                         images.push(img);
-                        if (images.length === files.length) {
+                        loadedImages++;
+                        
+                        if (loadedImages === files.length) {
                             drawImagesInBlocks();
+                            loading.style.display = 'none';
+                            canvas.style.display = 'block';
                         }
                     };
-                    reader.readAsDataURL(file);
-                }
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
         }
 
         function drawImagesInBlocks() {
-            const blockWidth = 590; 
-            const blockHeight = 590; 
+            if (images.length === 0) return;
+            
+            const config = sizeConfigs[currentSize];
+            const { blockWidth, blockHeight, blocksPerRow, blocksPerColumn } = config;
             const padding = 100; 
-
+            
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            const blocksPerRow = 3;
-            const blocksPerColumn = 5;
+            
             const totalWidth = (blockWidth + padding) * blocksPerRow - padding;
             const totalHeight = (blockHeight + padding) * blocksPerColumn - padding;
-
+            
             const startX = (canvas.width - totalWidth) / 2;
             const startY = (canvas.height - totalHeight) / 2;
-
-            const transformations = [];
+            
+            const repeats = Math.ceil((blocksPerRow * blocksPerColumn) / images.length);
+            
+            let imageIndex = 0;
+            let drawnCount = 0;
+            const totalBlocks = blocksPerRow * blocksPerColumn;
+            
             for (let sy = 0; sy < blocksPerColumn; sy++) {
                 for (let sx = 0; sx < blocksPerRow; sx++) {
-                    transformations.push({ sx, sy });
-                }
-            }
-
-            function calculateCrop(img, targetWidth, targetHeight) {
-                const imgRatio = img.width / img.height;
-                const targetRatio = targetWidth / targetHeight;
-
-                let sourceWidth, sourceHeight, sourceX, sourceY;
-
-                if (imgRatio > targetRatio) {
-                    sourceHeight = img.height;
-                    sourceWidth = sourceHeight * targetRatio;
-                    sourceX = (img.width - sourceWidth) / 2;
-                    sourceY = 0;
-                } else {
-                    sourceWidth = img.width;
-                    sourceHeight = sourceWidth / targetRatio;
-                    sourceX = 0;
-                    sourceY = (img.height - sourceHeight) / 2;
-                }
-
-                return { sourceX, sourceY, sourceWidth, sourceHeight };
-            }
-
-            if (images.length === 1) {
-                const img = images[0];
-                const crop = calculateCrop(img, blockWidth, blockHeight);
-
-                transformations.forEach((transform) => {
-                    const x = startX + transform.sx * (blockWidth + padding);
-                    const y = startY + transform.sy * (blockHeight + padding);
-
-                    ctx.drawImage(
-                        img, 
-                        crop.sourceX, crop.sourceY, crop.sourceWidth, crop.sourceHeight,
-                        x, y, 
-                        blockWidth, 
-                        blockHeight
-                    );
-                });
-            } else if (images.length >= 2) {
-                transformations.forEach((transform, index) => {
-                    const img = images[index % images.length];
+                    if (drawnCount >= totalBlocks) break;
+                    
+                    const img = images[imageIndex % images.length];
                     const crop = calculateCrop(img, blockWidth, blockHeight);
-
-                    const x = startX + transform.sx * (blockWidth + padding);
-                    const y = startY + transform.sy * (blockHeight + padding);
-
+                    
+                    const x = startX + sx * (blockWidth + padding);
+                    const y = startY + sy * (blockHeight + padding);
+                    
                     ctx.drawImage(
                         img, 
                         crop.sourceX, crop.sourceY, crop.sourceWidth, crop.sourceHeight,
@@ -224,16 +441,47 @@
                         blockWidth, 
                         blockHeight
                     );
-                });
+                    
+                    drawnCount++;
+                    imageIndex++;
+                }
             }
         }
 
+        function calculateCrop(img, targetWidth, targetHeight) {
+            const imgRatio = img.width / img.height;
+            const targetRatio = targetWidth / targetHeight;
+
+            let sourceWidth, sourceHeight, sourceX, sourceY;
+
+            if (imgRatio > targetRatio) {
+                sourceHeight = img.height;
+                sourceWidth = sourceHeight * targetRatio;
+                sourceX = (img.width - sourceWidth) / 2;
+                sourceY = 0;
+            } else {
+                sourceWidth = img.width;
+                sourceHeight = sourceWidth / targetRatio;
+                sourceX = 0;
+                sourceY = (img.height - sourceHeight) / 2;
+            }
+
+            return { sourceX, sourceY, sourceWidth, sourceHeight };
+        }
+
         function saveImage() {
-            const imgURL = canvas.toDataURL("image/jpeg");
+            if (images.length === 0) {
+                alert('Por favor, carregue pelo menos uma imagem antes de salvar.');
+                return;
+            }
+            
+            const imgURL = canvas.toDataURL("image/jpeg", 0.9);
             const a = document.createElement("a");
             a.href = imgURL;
-            a.download = "fotos_5x5.jpg";
+            a.download = `fotos_${currentSize}.jpg`;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
         }
 
         function resetCanvas() {
@@ -241,6 +489,8 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             inputImage.value = ''; 
             images = [];
+            canvas.style.display = 'none';
+            imageCounter.style.display = 'none';
         }
     </script>
 </body>
